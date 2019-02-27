@@ -26,16 +26,16 @@ public class ScreenSize extends CordovaPlugin {
       int width = dm.widthPixels;
       int height = dm.heightPixels;
 
-      double xdpi = (double)dm.xdpi;
-      double ydpi = (double)dm.ydpi;
-      double wi = (double)width / xdpi;
-      double he = (double)height / ydpi;
+      double xdpi = (double) dm.xdpi;
+      double ydpi = (double) dm.ydpi;
+      double wi = (double) width / xdpi;
+      double he = (double) height / ydpi;
       double x = Math.pow(wi, 2);
       double y = Math.pow(he, 2);
 
       double screenInches = Math.round(Math.sqrt(x + y) * 100.0) / 100.0;
 
-      double density_value = (double)dm.density;
+      double density_value = (double) dm.density;
       String density_bucket = "";
 
       // https://design.google.com/devices/
@@ -55,6 +55,13 @@ public class ScreenSize extends CordovaPlugin {
         density_bucket = "xxxhdpi";
       }
 
+      if (android.os.Build.VERSION.SDK_INT >= 23) {
+        width = this.cordova.getActivity().getWindowManager().getDefaultDisplay().getMode().getPhysicalWidth();
+        height = this.cordova.getActivity().getWindowManager().getDefaultDisplay().getMode().getPhysicalHeight();
+      }
+
+      int softbuttonsbarHeight = getSoftbuttonsbarHeight();
+
       JSONObject result = new JSONObject();
 
       try {
@@ -65,7 +72,9 @@ public class ScreenSize extends CordovaPlugin {
         result.put("ydpi", ydpi);
         result.put("densityValue", density_value);
         result.put("densityBucket", density_bucket);
-      } catch (JSONException e) {}
+        result.put("softButtonsBarHeight", softbuttonsbarHeight);
+      } catch (JSONException e) {
+      }
 
       callbackContext.success(result);
 
@@ -73,5 +82,21 @@ public class ScreenSize extends CordovaPlugin {
     } else {
       return false;
     }
+  }
+
+  private int getSoftbuttonsbarHeight() {
+    // getRealMetrics is only available with API 17 and +
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      DisplayMetrics metrics = new DisplayMetrics();
+      getWindowManager().getDefaultDisplay().getMetrics(metrics);
+      int usableHeight = metrics.heightPixels;
+      getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+      int realHeight = metrics.heightPixels;
+      if (realHeight > usableHeight)
+        return realHeight - usableHeight;
+      else
+        return 0;
+    }
+    return 0;
   }
 }
