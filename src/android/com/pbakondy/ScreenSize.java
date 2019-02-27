@@ -88,9 +88,10 @@ public class ScreenSize extends CordovaPlugin {
     // getRealMetrics is only available with API 17 and +
     if (android.os.Build.VERSION.SDK_INT >= 17) {
       DisplayMetrics metrics = new DisplayMetrics();
-      getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+      this.cordova.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
       int usableHeight = metrics.heightPixels;
-      getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+      this.cordova.getActivity().getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
       int realHeight = metrics.heightPixels;
       if (realHeight > usableHeight)
         return realHeight - usableHeight;
