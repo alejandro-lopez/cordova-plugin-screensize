@@ -86,7 +86,7 @@ public class ScreenSize extends CordovaPlugin {
 
   private int getSoftbuttonsbarHeight() {
     // getRealMetrics is only available with API 17 and +
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    if (android.os.Build.VERSION.SDK_INT >= 17) {
       DisplayMetrics metrics = new DisplayMetrics();
       getWindowManager().getDefaultDisplay().getMetrics(metrics);
       int usableHeight = metrics.heightPixels;
