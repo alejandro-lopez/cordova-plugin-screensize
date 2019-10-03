@@ -22,7 +22,8 @@ public class ScreenSize extends CordovaPlugin {
 
       DisplayMetrics dm = new DisplayMetrics();
       this.cordova.getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-
+      int usableHeight = 0;
+      int realHeight = 0;
       int width = dm.widthPixels;
       int height = dm.heightPixels;
 
@@ -59,12 +60,21 @@ public class ScreenSize extends CordovaPlugin {
         width = this.cordova.getActivity().getWindowManager().getDefaultDisplay().getMode().getPhysicalWidth();
         height = this.cordova.getActivity().getWindowManager().getDefaultDisplay().getMode().getPhysicalHeight();
       }
+      if (android.os.Build.VERSION.SDK_INT >= 17) {
+          DisplayMetrics metrics = new DisplayMetrics();
 
+          this.cordova.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+          usableHeight = metrics.heightPixels;
+          this.cordova.getActivity().getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+          realHeight = metrics.heightPixels;
+      }
       int softbuttonsbarHeight = getSoftbuttonsbarHeight();
 
       JSONObject result = new JSONObject();
 
       try {
+        result.put("realHeight",realHeight);
+        result.put("usableHeight",usableHeight);
         result.put("width", width);
         result.put("height", height);
         result.put("diameter", screenInches);
